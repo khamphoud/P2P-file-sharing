@@ -24,8 +24,8 @@
         .container {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 700px;
             width: 100%;
             padding: 40px;
         }
@@ -44,40 +44,47 @@
             font-size: 0.9em;
         }
 
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         .section {
             margin-bottom: 30px;
             padding: 20px;
             background: #f8f9fa;
             border-radius: 10px;
-        }
-
-        .section h2 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-        }
-
-        .status {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .status.waiting {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status.connected {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
         }
 
         .input-group {
@@ -96,8 +103,8 @@
             padding: 12px;
             border: 2px solid #ddd;
             border-radius: 8px;
-            font-size: 14px;
-            transition: border 0.3s;
+            font-size: 16px;
+            transition: border-color 0.3s;
         }
 
         input[type="text"]:focus {
@@ -105,39 +112,26 @@
             border-color: #667eea;
         }
 
-        input[type="file"] {
-            display: none;
-        }
-
         .btn {
-            width: 100%;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-
-        .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
         }
 
-        .btn-primary:hover {
+        .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #5a6268;
+        .btn:active {
+            transform: translateY(0);
         }
 
         .btn:disabled {
@@ -146,331 +140,530 @@
             transform: none;
         }
 
+        .btn-secondary {
+            background: #6c757d;
+            margin-top: 10px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+
         .file-label {
-            display: block;
-            padding: 12px;
-            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
             border: 2px dashed #667eea;
             border-radius: 8px;
-            text-align: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: background-color 0.3s;
+            text-align: center;
         }
 
         .file-label:hover {
-            background: #f0f4ff;
-            border-color: #764ba2;
+            background-color: #f0f0f0;
         }
 
-        .progress-container {
-            display: none;
+        .status {
+            padding: 15px;
+            border-radius: 8px;
             margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .progress {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
         }
 
         .progress-bar {
-            width: 100%;
-            height: 30px;
-            background: #e9ecef;
-            border-radius: 15px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            width: 0%;
             transition: width 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .room-code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 32px;
+            text-align: center;
+            margin: 20px 0;
+            letter-spacing: 5px;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .peer-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .peer-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid #e0e0e0;
+        }
+
+        .peer-name {
             font-weight: 600;
+            color: #333;
+        }
+
+        .peer-status {
+            color: #28a745;
             font-size: 12px;
         }
 
-        .file-info {
-            display: none;
-            margin-top: 10px;
-            padding: 10px;
-            background: white;
-            border-radius: 8px;
+        .small-btn {
+            padding: 8px 20px;
             font-size: 14px;
-        }
-
-        .code-box {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            word-break: break-all;
-            border: 2px solid #667eea;
-            margin-top: 10px;
-        }
-
-        .hidden {
-            display: none;
+            width: auto;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🚀 P2P File Transfer</h1>
-        <p class="subtitle">Direct peer-to-peer file sharing in your browser</p>
+        <p class="subtitle">Share files instantly with a simple room code</p>
 
-        <div id="statusBar" class="status waiting">
-            Waiting to connect...
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('send')">📤 Send</button>
+            <button class="tab" onclick="switchTab('receive')">📥 Receive</button>
         </div>
 
-        <div class="section">
-            <h2>📤 Send File</h2>
-            <div id="senderSection">
-                <button id="createRoomBtn" class="btn btn-primary">Create Transfer Room</button>
-                
-                <div id="roomCodeSection" class="hidden">
-                    <label>Share this code with the receiver:</label>
-                    <div class="code-box" id="roomCode"></div>
-                    
-                    <div class="input-group" style="margin-top: 20px;">
-                        <label for="fileInput">Choose File:</label>
+        <!-- SEND TAB -->
+        <div id="sendTab" class="tab-content active">
+            <div class="section">
+                <h2 style="margin-bottom: 15px;">Select File to Share</h2>
+                <div class="input-group">
+                    <div class="file-input-wrapper">
+                        <input type="file" id="fileInput" />
                         <label for="fileInput" class="file-label">
-                            📎 Click to select file
+                            <span id="fileLabel">📁 Click to select a file</span>
                         </label>
-                        <input type="file" id="fileInput">
-                        <div id="fileInfo" class="file-info"></div>
                     </div>
+                </div>
+                <button class="btn" id="createRoomBtn" disabled>Create Room & Get Code</button>
+                <div id="sendStatus"></div>
+            </div>
 
-                    <button id="sendBtn" class="btn btn-primary" disabled>Send File</button>
-                    
-                    <div class="progress-container" id="sendProgress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="sendProgressFill">0%</div>
-                        </div>
+            <div id="roomCreated" style="display: none;">
+                <div class="section">
+                    <h2 style="margin-bottom: 15px;">🔑 Your Room Code</h2>
+                    <div class="room-code" id="roomCodeDisplay">----</div>
+                    <div class="info-box">
+                        Share this code with the person you want to send the file to. They should enter it in the "Receive" tab.
                     </div>
+                </div>
+
+                <div class="section">
+                    <h2 style="margin-bottom: 15px;">👥 Connected Users</h2>
+                    <ul class="peer-list" id="senderPeerList">
+                        <li style="text-align: center; color: #999; padding: 20px;">Waiting for receiver to join...</li>
+                    </ul>
                 </div>
             </div>
         </div>
 
-        <div class="section">
-            <h2>📥 Receive File</h2>
-            <div id="receiverSection">
+        <!-- RECEIVE TAB -->
+        <div id="receiveTab" class="tab-content">
+            <div class="section">
+                <h2 style="margin-bottom: 15px;">Join a Room</h2>
                 <div class="input-group">
-                    <label for="joinCode">Enter Room Code:</label>
-                    <input type="text" id="joinCode" placeholder="Paste code here">
+                    <label for="roomCodeInput">Enter the 4-digit room code:</label>
+                    <input type="text" id="roomCodeInput" placeholder="e.g., 1234" maxlength="4" />
                 </div>
-                <button id="joinRoomBtn" class="btn btn-primary">Join & Receive</button>
-                
-                <div class="progress-container" id="receiveProgress">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="receiveProgressFill">0%</div>
-                    </div>
+                <button class="btn" id="joinRoomBtn">Join Room</button>
+                <div id="receiveStatus"></div>
+            </div>
+
+            <div id="roomJoined" style="display: none;">
+                <div class="section">
+                    <h2 style="margin-bottom: 15px;">👥 Connected Users</h2>
+                    <ul class="peer-list" id="receiverPeerList">
+                        <li style="text-align: center; color: #999; padding: 20px;">Connecting...</li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let peerConnection;
-        let dataChannel;
-        let fileToSend;
-        let receivedBuffer = [];
-        let receivedSize = 0;
-        let fileMetadata = {};
-        const CHUNK_SIZE = 16384;
+        // Simple signaling server simulation using a shared object
+        const rooms = {};
+        let myPeerId = Math.random().toString(36).substr(2, 9);
+        let currentRoomCode = null;
+        let pc = null;
+        let dataChannel = null;
+        let fileToSend = null;
+        let receivedChunks = [];
+        let isSender = false;
 
-        const statusBar = document.getElementById('statusBar');
-        const createRoomBtn = document.getElementById('createRoomBtn');
-        const roomCodeSection = document.getElementById('roomCodeSection');
-        const roomCode = document.getElementById('roomCode');
         const fileInput = document.getElementById('fileInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const sendBtn = document.getElementById('sendBtn');
-        const joinCode = document.getElementById('joinCode');
+        const fileLabel = document.getElementById('fileLabel');
+        const createRoomBtn = document.getElementById('createRoomBtn');
         const joinRoomBtn = document.getElementById('joinRoomBtn');
-        const sendProgress = document.getElementById('sendProgress');
-        const sendProgressFill = document.getElementById('sendProgressFill');
-        const receiveProgress = document.getElementById('receiveProgress');
-        const receiveProgressFill = document.getElementById('receiveProgressFill');
+        const roomCodeInput = document.getElementById('roomCodeInput');
+        const roomCodeDisplay = document.getElementById('roomCodeDisplay');
+        const sendStatus = document.getElementById('sendStatus');
+        const receiveStatus = document.getElementById('receiveStatus');
+        const roomCreated = document.getElementById('roomCreated');
+        const roomJoined = document.getElementById('roomJoined');
+        const senderPeerList = document.getElementById('senderPeerList');
+        const receiverPeerList = document.getElementById('receiverPeerList');
 
-        const config = {
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' },
-                { urls: 'stun:stun1.l.google.com:19302' }
-            ]
-        };
-
-        function updateStatus(message, type = 'waiting') {
-            statusBar.textContent = message;
-            statusBar.className = `status ${type}`;
-        }
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileToSend = file;
+                fileLabel.textContent = `✓ ${file.name} (${formatFileSize(file.size)})`;
+                createRoomBtn.disabled = false;
+            }
+        });
 
         createRoomBtn.addEventListener('click', async () => {
-            try {
-                peerConnection = new RTCPeerConnection(config);
-                
-                dataChannel = peerConnection.createDataChannel('fileTransfer');
-                setupDataChannel();
-                
-                const offer = await peerConnection.createOffer();
-                await peerConnection.setLocalDescription(offer);
-                
-                peerConnection.onicecandidate = (event) => {
-                    if (!event.candidate) {
-                        const offerData = btoa(JSON.stringify(peerConnection.localDescription));
-                        roomCode.textContent = offerData;
-                        roomCodeSection.classList.remove('hidden');
-                        createRoomBtn.disabled = true;
-                        updateStatus('Room created! Share the code with receiver.', 'waiting');
-                    }
-                };
-                
-                peerConnection.oniceconnectionstatechange = () => {
-                    if (peerConnection.iceConnectionState === 'connected') {
-                        updateStatus('Connected! Ready to send file.', 'connected');
-                    }
-                };
-            } catch (error) {
-                updateStatus('Error creating room: ' + error.message, 'error');
-            }
+            isSender = true;
+            const roomCode = generateRoomCode();
+            currentRoomCode = roomCode;
+            
+            // Store room in memory
+            rooms[roomCode] = {
+                sender: myPeerId,
+                receiver: null,
+                offers: {},
+                answers: {}
+            };
+
+            roomCodeDisplay.textContent = roomCode;
+            roomCreated.style.display = 'block';
+            createRoomBtn.disabled = true;
+
+            showStatus(sendStatus, 'success', '✅ Room created! Share the code above.');
+            
+            // Check for receiver joining
+            checkForReceiver();
         });
 
         joinRoomBtn.addEventListener('click', async () => {
+            const roomCode = roomCodeInput.value.trim().toUpperCase();
+            
+            if (!roomCode || roomCode.length !== 4) {
+                showStatus(receiveStatus, 'error', 'Please enter a valid 4-digit code');
+                return;
+            }
+
+            if (!rooms[roomCode]) {
+                showStatus(receiveStatus, 'error', 'Room not found. Please check the code.');
+                return;
+            }
+
+            if (rooms[roomCode].receiver) {
+                showStatus(receiveStatus, 'error', 'Room is full. Only 2 people can connect.');
+                return;
+            }
+
+            isSender = false;
+            currentRoomCode = roomCode;
+            rooms[roomCode].receiver = myPeerId;
+
+            roomJoined.style.display = 'block';
+            joinRoomBtn.disabled = true;
+
+            showStatus(receiveStatus, 'success', '✅ Joined room! Connecting...');
+            
+            // Create connection as receiver
+            await createReceiverConnection();
+        });
+
+        async function checkForReceiver() {
+            const interval = setInterval(async () => {
+                if (!currentRoomCode || !rooms[currentRoomCode]) {
+                    clearInterval(interval);
+                    return;
+                }
+
+                const room = rooms[currentRoomCode];
+                if (room.receiver) {
+                    clearInterval(interval);
+                    senderPeerList.innerHTML = '<li class="peer-item"><span class="peer-name">Receiver</span><span class="peer-status">● Connected</span></li>';
+                    
+                    // Create connection as sender
+                    await createSenderConnection();
+                }
+            }, 1000);
+        }
+
+        async function createSenderConnection() {
             try {
-                const offerData = JSON.parse(atob(joinCode.value.trim()));
-                
-                peerConnection = new RTCPeerConnection(config);
-                
-                peerConnection.ondatachannel = (event) => {
-                    dataChannel = event.channel;
-                    setupDataChannel();
-                };
-                
-                await peerConnection.setRemoteDescription(offerData);
-                const answer = await peerConnection.createAnswer();
-                await peerConnection.setLocalDescription(answer);
-                
-                peerConnection.onicecandidate = (event) => {
-                    if (!event.candidate) {
-                        const answerData = btoa(JSON.stringify(peerConnection.localDescription));
-                        
-                        const copyAnswer = prompt('Copy this code and send it back to the sender:', answerData);
-                        
-                        updateStatus('Waiting for connection...', 'waiting');
-                    }
-                };
-                
-                peerConnection.oniceconnectionstatechange = () => {
-                    if (peerConnection.iceConnectionState === 'connected') {
-                        updateStatus('Connected! Waiting for file...', 'connected');
-                    }
-                };
-            } catch (error) {
-                updateStatus('Error joining room: ' + error.message, 'error');
-            }
-        });
+                pc = new RTCPeerConnection({
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' }
+                    ]
+                });
 
-        roomCode.addEventListener('click', () => {
-            const answerCode = prompt('Paste the answer code from receiver:');
-            if (answerCode) {
-                try {
-                    const answerData = JSON.parse(atob(answerCode.trim()));
-                    peerConnection.setRemoteDescription(answerData);
-                } catch (error) {
-                    updateStatus('Invalid answer code', 'error');
+                dataChannel = pc.createDataChannel('fileTransfer');
+                setupDataChannel(dataChannel);
+
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+
+                // Wait for ICE gathering
+                await new Promise((resolve) => {
+                    if (pc.iceGatheringState === 'complete') {
+                        resolve();
+                    } else {
+                        pc.addEventListener('icegatheringstatechange', () => {
+                            if (pc.iceGatheringState === 'complete') {
+                                resolve();
+                            }
+                        });
+                    }
+                });
+
+                // Store offer
+                rooms[currentRoomCode].offers[myPeerId] = pc.localDescription;
+
+                // Wait for answer
+                checkForAnswer();
+            } catch (err) {
+                showStatus(sendStatus, 'error', `Error: ${err.message}`);
+            }
+        }
+
+        async function checkForAnswer() {
+            const interval = setInterval(async () => {
+                if (!currentRoomCode || !rooms[currentRoomCode]) {
+                    clearInterval(interval);
+                    return;
                 }
-            }
-        });
 
-        function setupDataChannel() {
-            dataChannel.binaryType = 'arraybuffer';
-            
-            dataChannel.onopen = () => {
-                updateStatus('Channel opened! Ready to transfer.', 'connected');
+                const room = rooms[currentRoomCode];
+                const answer = room.answers[room.receiver];
+
+                if (answer) {
+                    clearInterval(interval);
+                    await pc.setRemoteDescription(answer);
+                    showStatus(sendStatus, 'info', 'Connecting to receiver...');
+                }
+            }, 1000);
+        }
+
+        async function createReceiverConnection() {
+            try {
+                // Wait for offer
+                const interval = setInterval(async () => {
+                    if (!currentRoomCode || !rooms[currentRoomCode]) {
+                        clearInterval(interval);
+                        return;
+                    }
+
+                    const room = rooms[currentRoomCode];
+                    const offer = room.offers[room.sender];
+
+                    if (offer) {
+                        clearInterval(interval);
+
+                        pc = new RTCPeerConnection({
+                            iceServers: [
+                                { urls: 'stun:stun.l.google.com:19302' },
+                                { urls: 'stun:stun1.l.google.com:19302' }
+                            ]
+                        });
+
+                        pc.ondatachannel = (e) => {
+                            dataChannel = e.channel;
+                            setupDataChannel(dataChannel);
+                        };
+
+                        await pc.setRemoteDescription(offer);
+                        const answer = await pc.createAnswer();
+                        await pc.setLocalDescription(answer);
+
+                        // Wait for ICE gathering
+                        await new Promise((resolve) => {
+                            if (pc.iceGatheringState === 'complete') {
+                                resolve();
+                            } else {
+                                pc.addEventListener('icegatheringstatechange', () => {
+                                    if (pc.iceGatheringState === 'complete') {
+                                        resolve();
+                                    }
+                                });
+                            }
+                        });
+
+                        // Store answer
+                        rooms[currentRoomCode].answers[myPeerId] = pc.localDescription;
+
+                        receiverPeerList.innerHTML = '<li class="peer-item"><span class="peer-name">Sender</span><span class="peer-status">● Connected</span></li>';
+                    }
+                }, 1000);
+            } catch (err) {
+                showStatus(receiveStatus, 'error', `Error: ${err.message}`);
+            }
+        }
+
+        function setupDataChannel(channel) {
+            channel.onopen = () => {
+                const statusEl = isSender ? sendStatus : receiveStatus;
+                showStatus(statusEl, 'success', '✅ Connected! Ready to transfer.');
+                
+                if (fileToSend && isSender) {
+                    setTimeout(() => sendFile(), 500);
+                }
             };
-            
-            dataChannel.onmessage = (event) => {
-                if (typeof event.data === 'string') {
-                    fileMetadata = JSON.parse(event.data);
-                    receivedBuffer = [];
-                    receivedSize = 0;
-                    receiveProgress.style.display = 'block';
-                    updateStatus(`Receiving: ${fileMetadata.name}`, 'connected');
-                } else {
-                    receivedBuffer.push(event.data);
-                    receivedSize += event.data.byteLength;
-                    
-                    const progress = (receivedSize / fileMetadata.size) * 100;
-                    receiveProgressFill.style.width = progress + '%';
-                    receiveProgressFill.textContent = Math.round(progress) + '%';
-                    
-                    if (receivedSize === fileMetadata.size) {
-                        const blob = new Blob(receivedBuffer);
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = fileMetadata.name;
-                        a.click();
-                        URL.revokeObjectURL(url);
-                        
-                        updateStatus('File received successfully! ✅', 'connected');
-                        receiveProgressFill.textContent = 'Complete!';
+
+            channel.onmessage = (e) => {
+                if (typeof e.data === 'string') {
+                    const metadata = JSON.parse(e.data);
+                    if (metadata.type === 'metadata') {
+                        receivedChunks = [];
+                        showStatus(receiveStatus, 'info', `Receiving: ${metadata.name} (${formatFileSize(metadata.size)})`);
+                    } else if (metadata.type === 'complete') {
+                        const blob = new Blob(receivedChunks);
+                        downloadFile(blob, metadata.name);
+                        showStatus(receiveStatus, 'success', `✅ File received: ${metadata.name}`);
                     }
+                } else {
+                    receivedChunks.push(e.data);
                 }
+            };
+
+            channel.onerror = (err) => {
+                console.error('Channel error:', err);
             };
         }
 
-        fileInput.addEventListener('change', (e) => {
-            fileToSend = e.target.files[0];
-            if (fileToSend) {
-                fileInfo.style.display = 'block';
-                fileInfo.textContent = `Selected: ${fileToSend.name} (${(fileToSend.size / 1024 / 1024).toFixed(2)} MB)`;
-                sendBtn.disabled = false;
-            }
-        });
-
-        sendBtn.addEventListener('click', () => {
-            if (!fileToSend || !dataChannel || dataChannel.readyState !== 'open') {
-                updateStatus('Connection not ready', 'error');
-                return;
-            }
-            
+        function sendFile() {
+            const chunkSize = 16384;
             const metadata = {
+                type: 'metadata',
                 name: fileToSend.name,
-                size: fileToSend.size,
-                type: fileToSend.type
+                size: fileToSend.size
             };
-            
             dataChannel.send(JSON.stringify(metadata));
-            
-            sendProgress.style.display = 'block';
-            updateStatus('Sending file...', 'connected');
-            
+
             const reader = new FileReader();
             let offset = 0;
-            
+
             reader.onload = (e) => {
                 dataChannel.send(e.target.result);
                 offset += e.target.result.byteLength;
-                
-                const progress = (offset / fileToSend.size) * 100;
-                sendProgressFill.style.width = progress + '%';
-                sendProgressFill.textContent = Math.round(progress) + '%';
-                
+
+                const progress = Math.round((offset / fileToSend.size) * 100);
+                showStatus(sendStatus, 'info', `
+                    Sending: ${fileToSend.name}
+                    <div class="progress">
+                        <div class="progress-bar" style="width: ${progress}%">${progress}%</div>
+                    </div>
+                `);
+
                 if (offset < fileToSend.size) {
                     readSlice(offset);
                 } else {
-                    updateStatus('File sent successfully! ✅', 'connected');
-                    sendProgressFill.textContent = 'Complete!';
+                    dataChannel.send(JSON.stringify({ type: 'complete', name: fileToSend.name }));
+                    showStatus(sendStatus, 'success', `✅ File sent successfully: ${fileToSend.name}`);
                 }
             };
-            
-            const readSlice = (o) => {
-                const slice = fileToSend.slice(o, o + CHUNK_SIZE);
+
+            function readSlice(o) {
+                const slice = fileToSend.slice(o, o + chunkSize);
                 reader.readAsArrayBuffer(slice);
-            };
-            
+            }
+
             readSlice(0);
-        });
+        }
+
+        function downloadFile(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function generateRoomCode() {
+            return Math.floor(1000 + Math.random() * 9000).toString();
+        }
+
+        function showStatus(element, type, message) {
+            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            if (tab === 'send') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('sendTab').classList.add('active');
+            } else {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('receiveTab').classList.add('active');
+            }
+        }
     </script>
 </body>
 </html>

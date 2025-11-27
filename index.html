@@ -9,11 +9,11 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,524 +22,451 @@
         }
 
         .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 700px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             width: 100%;
-            padding: 40px;
+            max-width: 800px;
+            overflow: hidden;
+        }
+
+        header {
+            background-color: #4a00e0;
+            color: white;
+            padding: 20px;
+            text-align: center;
         }
 
         h1 {
-            color: #667eea;
-            text-align: center;
+            font-size: 28px;
             margin-bottom: 10px;
-            font-size: 2em;
         }
 
         .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 0.9em;
+            font-size: 16px;
+            opacity: 0.8;
         }
 
-        .tabs {
+        .mode-selector {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #e0e0e0;
+            border-bottom: 1px solid #eee;
         }
 
-        .tab {
-            padding: 15px 30px;
+        .mode-btn {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
             background: none;
             border: none;
-            cursor: pointer;
             font-size: 16px;
             font-weight: 600;
-            color: #666;
-            border-bottom: 3px solid transparent;
+            cursor: pointer;
             transition: all 0.3s;
         }
 
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
+        .mode-btn.active {
+            background-color: #f0f0f0;
+            color: #4a00e0;
         }
 
-        .tab:hover {
-            color: #667eea;
+        .content {
+            padding: 30px;
         }
 
-        .tab-content {
+        .panel {
             display: none;
         }
 
-        .tab-content.active {
+        .panel.active {
             display: block;
         }
 
-        .section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
+        .form-group {
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: 500;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
-            width: 100%;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            width: 100%;
-        }
-
-        .file-input-wrapper input[type="file"] {
-            position: absolute;
-            left: -9999px;
-        }
-
-        .file-label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            border: 2px dashed #667eea;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            text-align: center;
-        }
-
-        .file-label:hover {
-            background-color: #f0f0f0;
-        }
-
-        .status {
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        .status.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .progress {
-            width: 100%;
-            height: 20px;
-            background: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .room-code {
-            background: #2d2d2d;
-            color: #f8f8f2;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 32px;
-            text-align: center;
-            margin: 20px 0;
-            letter-spacing: 5px;
-        }
-
-        .info-box {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            color: #856404;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-
-        .peer-item {
-            background: white;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 2px solid #e0e0e0;
-        }
-
-        .peer-name {
+            margin-bottom: 8px;
             font-weight: 600;
             color: #333;
         }
 
-        .peer-status {
-            color: #28a745;
-            font-size: 12px;
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        input[type="text"]:focus {
+            border-color: #4a00e0;
+            outline: none;
+        }
+
+        .code-input {
+            font-size: 24px;
+            text-align: center;
+            letter-spacing: 10px;
+            font-weight: bold;
+        }
+
+        .btn {
+            background-color: #4a00e0;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background-color: #3a00b0;
+        }
+
+        .btn:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .status.connecting {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status.connected {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .file-list {
+            margin-top: 20px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .file-icon {
+            margin-right: 10px;
+            color: #4a00e0;
+        }
+
+        .file-name {
+            font-weight: 500;
+        }
+
+        .file-size {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: #eee;
+            border-radius: 3px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: #4a00e0;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .transfer-status {
+            margin-top: 20px;
+        }
+
+        .transfer-item {
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .transfer-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .transfer-name {
+            font-weight: 500;
+        }
+
+        .transfer-percent {
+            color: #4a00e0;
+            font-weight: 600;
+        }
+
+        .instructions {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .instructions ol {
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                border-radius: 0;
+            }
+            
+            body {
+                padding: 0;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 P2P File Transfer</h1>
-        <p class="subtitle">Share files instantly with a simple room code</p>
-
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('send')">📤 Send</button>
-            <button class="tab" onclick="switchTab('receive')">📥 Receive</button>
+        <header>
+            <h1>P2P File Transfer</h1>
+            <p class="subtitle">Send files directly between devices using a 4-digit code</p>
+        </header>
+        
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="sender">Send Files</button>
+            <button class="mode-btn" data-mode="receiver">Receive Files</button>
         </div>
-
-        <!-- SEND TAB -->
-        <div id="sendTab" class="tab-content active">
-            <div class="section">
-                <h2 style="margin-bottom: 15px;">Select File to Share</h2>
-                <div class="input-group">
-                    <div class="file-input-wrapper">
-                        <input type="file" id="fileInput" />
-                        <label for="fileInput" class="file-label">
-                            <span id="fileLabel">📁 Click to select a file</span>
-                        </label>
-                    </div>
+        
+        <div class="content">
+            <!-- Sender Panel -->
+            <div class="panel active" id="sender-panel">
+                <div class="form-group">
+                    <label for="connection-code">Connection Code</label>
+                    <input type="text" id="connection-code" class="code-input" maxlength="4" placeholder="0000">
                 </div>
-                <button class="btn" id="createRoomBtn" disabled>Create Room & Get Code</button>
-                <div id="sendStatus"></div>
+                
+                <div class="form-group">
+                    <label for="file-input">Select Files</label>
+                    <input type="file" id="file-input" multiple>
+                </div>
+                
+                <div class="file-list" id="sender-file-list">
+                    <!-- Files will be listed here -->
+                </div>
+                
+                <button class="btn" id="connect-btn">Connect & Send</button>
+                
+                <div class="status" id="sender-status">
+                    Enter a 4-digit code and select files to begin
+                </div>
+                
+                <div class="transfer-status" id="sender-transfer-status">
+                    <!-- Transfer progress will be shown here -->
+                </div>
             </div>
-
-            <div id="roomCreated" style="display: none;">
-                <div class="section">
-                    <h2 style="margin-bottom: 15px;">🔑 Your Room Code</h2>
-                    <div class="room-code" id="roomCodeDisplay">----</div>
-                    <div class="info-box">
-                        Share this code with the person you want to send the file to. They should enter it in the "Receive" tab.
-                    </div>
+            
+            <!-- Receiver Panel -->
+            <div class="panel" id="receiver-panel">
+                <div class="form-group">
+                    <label for="receiver-code">Your Connection Code</label>
+                    <input type="text" id="receiver-code" class="code-input" readonly value="0000">
                 </div>
-
-                <div class="section">
-                    <h2 style="margin-bottom: 15px;">👥 Status</h2>
-                    <div id="senderPeerStatus" style="text-align: center; color: #999; padding: 20px;">Waiting for receiver to join...</div>
+                
+                <button class="btn" id="generate-code-btn">Generate New Code</button>
+                
+                <div class="status" id="receiver-status">
+                    Share this code with the sender
                 </div>
+                
+                <div class="transfer-status" id="receiver-transfer-status">
+                    <!-- Received files will be shown here -->
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3>How to use:</h3>
+                <ol>
+                    <li>On the receiving device, go to "Receive Files" and share the 4-digit code</li>
+                    <li>On the sending device, go to "Send Files", enter the code and select files</li>
+                    <li>Click "Connect & Send" to establish connection and transfer files</li>
+                    <li>Files are transferred directly between devices - no servers involved</li>
+                </ol>
             </div>
         </div>
-
-        <!-- RECEIVE TAB -->
-        <div id="receiveTab" class="tab-content">
-            <div class="section">
-                <h2 style="margin-bottom: 15px;">Join a Room</h2>
-                <div class="input-group">
-                    <label for="roomCodeInput">Enter the room code from sender:</label>
-                    <input type="text" id="roomCodeInput" placeholder="Enter room code" />
-                </div>
-                <button class="btn" id="joinRoomBtn">Join Room</button>
-                <div id="receiveStatus"></div>
-            </div>
-
-            <div id="roomJoined" style="display: none;">
-                <div class="section">
-                    <h2 style="margin-bottom: 15px;">👥 Status</h2>
-                    <div id="receiverPeerStatus" style="text-align: center; color: #999; padding: 20px;">Connecting...</div>
-                </div>
-            </div>
-        </div>
+        
+        <footer>
+            P2P File Transfer System &copy; 2023 | Works entirely in your browser
+        </footer>
     </div>
 
     <script>
-        // Using PeerJS for simplified WebRTC with built-in signaling
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js';
-        document.head.appendChild(script);
+        // Global variables
+        let peerConnection = null;
+        let dataChannel = null;
+        let currentMode = 'sender';
+        let connectionCode = '';
+        let filesToSend = [];
+        let receivedFiles = [];
 
-        let peer = null;
-        let conn = null;
-        let fileToSend = null;
-        let receivedChunks = [];
-        let isSender = false;
-        let currentRoomCode = null;
+        // DOM elements
+        const modeBtns = document.querySelectorAll('.mode-btn');
+        const panels = document.querySelectorAll('.panel');
+        const connectionCodeInput = document.getElementById('connection-code');
+        const receiverCodeInput = document.getElementById('receiver-code');
+        const fileInput = document.getElementById('file-input');
+        const senderFileList = document.getElementById('sender-file-list');
+        const connectBtn = document.getElementById('connect-btn');
+        const generateCodeBtn = document.getElementById('generate-code-btn');
+        const senderStatus = document.getElementById('sender-status');
+        const receiverStatus = document.getElementById('receiver-status');
+        const senderTransferStatus = document.getElementById('sender-transfer-status');
+        const receiverTransferStatus = document.getElementById('receiver-transfer-status');
 
-        const fileInput = document.getElementById('fileInput');
-        const fileLabel = document.getElementById('fileLabel');
-        const createRoomBtn = document.getElementById('createRoomBtn');
-        const joinRoomBtn = document.getElementById('joinRoomBtn');
-        const roomCodeInput = document.getElementById('roomCodeInput');
-        const roomCodeDisplay = document.getElementById('roomCodeDisplay');
-        const sendStatus = document.getElementById('sendStatus');
-        const receiveStatus = document.getElementById('receiveStatus');
-        const roomCreated = document.getElementById('roomCreated');
-        const roomJoined = document.getElementById('roomJoined');
-        const senderPeerStatus = document.getElementById('senderPeerStatus');
-        const receiverPeerStatus = document.getElementById('receiverPeerStatus');
-
-        script.onload = function() {
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    fileToSend = file;
-                    fileLabel.textContent = `✓ ${file.name} (${formatFileSize(file.size)})`;
-                    createRoomBtn.disabled = false;
-                }
+        // Mode switching
+        modeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mode = btn.getAttribute('data-mode');
+                switchMode(mode);
             });
+        });
 
-            createRoomBtn.addEventListener('click', async () => {
-                isSender = true;
-                const roomCode = generateRoomCode();
-                currentRoomCode = roomCode;
-
-                // Create peer with room code as ID
-                peer = new Peer(roomCode, {
-                    config: {
-                        iceServers: [
-                            { urls: 'stun:stun.l.google.com:19302' },
-                            { urls: 'stun:stun1.l.google.com:19302' }
-                        ]
-                    }
-                });
-
-                peer.on('open', (id) => {
-                    roomCodeDisplay.textContent = id;
-                    roomCreated.style.display = 'block';
-                    createRoomBtn.disabled = true;
-                    showStatus(sendStatus, 'success', '✅ Room created! Share the code above.');
-                });
-
-                peer.on('connection', (connection) => {
-                    conn = connection;
-                    setupConnection(conn);
-                    senderPeerStatus.innerHTML = '<div class="peer-item"><span class="peer-name">Receiver</span><span class="peer-status">● Connected</span></div>';
-                });
-
-                peer.on('error', (err) => {
-                    console.error('Peer error:', err);
-                    if (err.type === 'unavailable-id') {
-                        showStatus(sendStatus, 'error', 'Room code already in use. Please try again.');
-                        createRoomBtn.disabled = false;
-                        roomCreated.style.display = 'none';
-                    } else {
-                        showStatus(sendStatus, 'error', `Error: ${err.message}`);
-                    }
-                });
-            });
-
-            joinRoomBtn.addEventListener('click', async () => {
-                const roomCode = roomCodeInput.value.trim();
-
-                if (!roomCode) {
-                    showStatus(receiveStatus, 'error', 'Please enter a room code');
-                    return;
-                }
-
-                isSender = false;
-                currentRoomCode = roomCode;
-
-                // Create peer as receiver
-                peer = new Peer({
-                    config: {
-                        iceServers: [
-                            { urls: 'stun:stun.l.google.com:19302' },
-                            { urls: 'stun:stun1.l.google.com:19302' }
-                        ]
-                    }
-                });
-
-                peer.on('open', (id) => {
-                    // Connect to sender
-                    conn = peer.connect(roomCode);
-                    setupConnection(conn);
-
-                    roomJoined.style.display = 'block';
-                    joinRoomBtn.disabled = true;
-                    showStatus(receiveStatus, 'success', '✅ Joined room! Connecting...');
-                });
-
-                peer.on('error', (err) => {
-                    console.error('Peer error:', err);
-                    if (err.type === 'peer-unavailable') {
-                        showStatus(receiveStatus, 'error', 'Room not found. Please check the code and make sure the sender has created the room.');
-                    } else {
-                        showStatus(receiveStatus, 'error', `Error: ${err.message}`);
-                    }
-                    joinRoomBtn.disabled = false;
-                });
-            });
-        };
-
-        function setupConnection(connection) {
-            connection.on('open', () => {
-                const statusEl = isSender ? sendStatus : receiveStatus;
-                const peerStatusEl = isSender ? senderPeerStatus : receiverPeerStatus;
-                
-                showStatus(statusEl, 'success', '✅ Connected! Ready to transfer.');
-                peerStatusEl.innerHTML = '<div class="peer-item"><span class="peer-name">' + (isSender ? 'Receiver' : 'Sender') + '</span><span class="peer-status">● Connected</span></div>';
-
-                if (fileToSend && isSender) {
-                    setTimeout(() => sendFile(), 500);
-                }
-            });
-
-            connection.on('data', (data) => {
-                if (data.type === 'metadata') {
-                    receivedChunks = [];
-                    showStatus(receiveStatus, 'info', `Receiving: ${data.name} (${formatFileSize(data.size)})`);
-                } else if (data.type === 'chunk') {
-                    receivedChunks.push(data.data);
-                    const progress = Math.round((receivedChunks.length * 16384 / data.totalSize) * 100);
-                    showStatus(receiveStatus, 'info', `
-                        Receiving: ${data.name}
-                        <div class="progress">
-                            <div class="progress-bar" style="width: ${Math.min(progress, 100)}%">${Math.min(progress, 100)}%</div>
-                        </div>
-                    `);
-                } else if (data.type === 'complete') {
-                    const blob = new Blob(receivedChunks);
-                    downloadFile(blob, data.name);
-                    showStatus(receiveStatus, 'success', `✅ File received: ${data.name}`);
-                }
-            });
-
-            connection.on('error', (err) => {
-                console.error('Connection error:', err);
-            });
-        }
-
-        function sendFile() {
-            const chunkSize = 16384;
+        function switchMode(mode) {
+            currentMode = mode;
             
-            // Send metadata
-            conn.send({
-                type: 'metadata',
-                name: fileToSend.name,
-                size: fileToSend.size
+            // Update active button
+            modeBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-mode') === mode);
             });
-
-            const reader = new FileReader();
-            let offset = 0;
-
-            reader.onload = (e) => {
-                // Send chunk
-                conn.send({
-                    type: 'chunk',
-                    data: e.target.result,
-                    name: fileToSend.name,
-                    totalSize: fileToSend.size
-                });
-
-                offset += e.target.result.byteLength;
-
-                const progress = Math.round((offset / fileToSend.size) * 100);
-                showStatus(sendStatus, 'info', `
-                    Sending: ${fileToSend.name}
-                    <div class="progress">
-                        <div class="progress-bar" style="width: ${progress}%">${progress}%</div>
-                    </div>
-                `);
-
-                if (offset < fileToSend.size) {
-                    readSlice(offset);
-                } else {
-                    conn.send({ type: 'complete', name: fileToSend.name });
-                    showStatus(sendStatus, 'success', `✅ File sent successfully: ${fileToSend.name}`);
-                }
-            };
-
-            function readSlice(o) {
-                const slice = fileToSend.slice(o, o + chunkSize);
-                reader.readAsArrayBuffer(slice);
+            
+            // Show active panel
+            panels.forEach(panel => {
+                panel.classList.toggle('active', panel.id === `${mode}-panel`);
+            });
+            
+            // Reset state when switching modes
+            resetConnection();
+            
+            if (mode === 'receiver') {
+                generateConnectionCode();
+            } else {
+                senderStatus.textContent = 'Enter a 4-digit code and select files to begin';
+                senderTransferStatus.innerHTML = '';
             }
-
-            readSlice(0);
         }
 
-        function downloadFile(blob, filename) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
-            URL.revokeObjectURL(url);
+        // Generate a random 4-digit code
+        function generateConnectionCode() {
+            connectionCode = Math.floor(1000 + Math.random() * 9000).toString();
+            receiverCodeInput.value = connectionCode;
+            receiverStatus.textContent = 'Share this code with the sender';
+            receiverTransferStatus.innerHTML = '';
         }
 
-        function generateRoomCode() {
-            return 'room-' + Math.random().toString(36).substr(2, 6);
-        }
+        // Initialize with a code for receiver
+        generateConnectionCode();
 
-        function showStatus(element, type, message) {
-            element.innerHTML = `<div class="status ${type}">${message}</div>`;
+        // File selection handling for sender
+        fileInput.addEventListener('change', () => {
+            filesToSend = Array.from(fileInput.files);
+            updateFileList();
+        });
+
+        function updateFileList() {
+            senderFileList.innerHTML = '';
+            
+            if (filesToSend.length === 0) {
+                senderFileList.innerHTML = '<div class="file-item">No files selected</div>';
+                return;
+            }
+            
+            filesToSend.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                
+                const fileInfo = document.createElement('div');
+                fileInfo.className = 'file-info';
+                
+                const fileIcon = document.createElement('span');
+                fileIcon.className = 'file-icon';
+                fileIcon.innerHTML = '📄';
+                
+                const fileName = document.createElement('span');
+                fileName.className = 'file-name';
+                fileName.textContent = file.name;
+                
+                const fileSize = document.createElement('span');
+                fileSize.className = 'file-size';
+                fileSize.textContent = formatFileSize(file.size);
+                
+                fileInfo.appendChild(fileIcon);
+                fileInfo.appendChild(fileName);
+                fileInfo.appendChild(fileSize);
+                
+                fileItem.appendChild(fileInfo);
+                senderFileList.appendChild(fileItem);
+            });
         }
 
         function formatFileSize(bytes) {
@@ -547,21 +474,136 @@
             const k = 1024;
             const sizes = ['Bytes', 'KB', 'MB', 'GB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        // Generate new code for receiver
+        generateCodeBtn.addEventListener('click', generateConnectionCode);
 
-            if (tab === 'send') {
-                document.querySelector('.tab:nth-child(1)').classList.add('active');
-                document.getElementById('sendTab').classList.add('active');
-            } else {
-                document.querySelector('.tab:nth-child(2)').classList.add('active');
-                document.getElementById('receiveTab').classList.add('active');
+        // Connection handling
+        connectBtn.addEventListener('click', initiateConnection);
+
+        function initiateConnection() {
+            const code = connectionCodeInput.value;
+            
+            if (code.length !== 4 || !/^\d+$/.test(code)) {
+                senderStatus.textContent = 'Please enter a valid 4-digit code';
+                senderStatus.className = 'status error';
+                return;
             }
+            
+            if (filesToSend.length === 0) {
+                senderStatus.textContent = 'Please select at least one file to send';
+                senderStatus.className = 'status error';
+                return;
+            }
+            
+            senderStatus.textContent = 'Connecting...';
+            senderStatus.className = 'status connecting';
+            
+            // In a real implementation, we would use WebRTC and a signaling server
+            // For this demo, we'll simulate the connection process
+            simulateConnection(code);
         }
+
+        function simulateConnection(code) {
+            // Simulate connection delay
+            setTimeout(() => {
+                if (Math.random() > 0.2) { // 80% success rate for demo
+                    senderStatus.textContent = 'Connected! Starting file transfer...';
+                    senderStatus.className = 'status connected';
+                    
+                    // Start file transfer simulation
+                    simulateFileTransfer();
+                } else {
+                    senderStatus.textContent = 'Connection failed. Please check the code and try again.';
+                    senderStatus.className = 'status error';
+                }
+            }, 1500);
+        }
+
+        function simulateFileTransfer() {
+            senderTransferStatus.innerHTML = '';
+            
+            filesToSend.forEach((file, index) => {
+                const transferItem = document.createElement('div');
+                transferItem.className = 'transfer-item';
+                transferItem.id = `transfer-${index}`;
+                
+                const transferHeader = document.createElement('div');
+                transferHeader.className = 'transfer-header';
+                
+                const transferName = document.createElement('div');
+                transferName.className = 'transfer-name';
+                transferName.textContent = file.name;
+                
+                const transferPercent = document.createElement('div');
+                transferPercent.className = 'transfer-percent';
+                transferPercent.textContent = '0%';
+                
+                transferHeader.appendChild(transferName);
+                transferHeader.appendChild(transferPercent);
+                
+                const progressBar = document.createElement('div');
+                progressBar.className = 'progress-bar';
+                
+                const progress = document.createElement('div');
+                progress.className = 'progress';
+                progress.id = `progress-${index}`;
+                
+                progressBar.appendChild(progress);
+                
+                transferItem.appendChild(transferHeader);
+                transferItem.appendChild(progressBar);
+                
+                senderTransferStatus.appendChild(transferItem);
+                
+                // Simulate file transfer progress
+                simulateProgress(index, file.size);
+            });
+        }
+
+        function simulateProgress(index, fileSize) {
+            let progress = 0;
+            const progressElement = document.getElementById(`progress-${index}`);
+            const percentElement = document.querySelector(`#transfer-${index} .transfer-percent`);
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    // Mark as completed
+                    setTimeout(() => {
+                        const transferItem = document.getElementById(`transfer-${index}`);
+                        transferItem.style.borderLeft = '4px solid #28a745';
+                    }, 500);
+                }
+                
+                progressElement.style.width = `${progress}%`;
+                percentElement.textContent = `${Math.round(progress)}%`;
+            }, 200);
+        }
+
+        function resetConnection() {
+            if (peerConnection) {
+                peerConnection.close();
+                peerConnection = null;
+            }
+            
+            if (dataChannel) {
+                dataChannel.close();
+                dataChannel = null;
+            }
+            
+            filesToSend = [];
+            fileInput.value = '';
+            updateFileList();
+        }
+
+        // Initialize
+        updateFileList();
     </script>
 </body>
 </html>

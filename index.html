@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>P2P File Transfer</title>
+    <title>P2P File Transfer with WebRTC</title>
     <style>
         * {
             margin: 0;
@@ -26,7 +26,7 @@
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             overflow: hidden;
         }
 
@@ -124,6 +124,7 @@
             transition: background-color 0.3s;
             width: 100%;
             font-weight: 600;
+            margin-bottom: 10px;
         }
 
         .btn:hover {
@@ -276,6 +277,21 @@
             border-top: 1px solid #eee;
         }
 
+        .connection-info {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .connection-info input {
+            flex: 1;
+        }
+
+        .connection-info button {
+            width: auto;
+            padding: 12px 20px;
+        }
+
         @media (max-width: 600px) {
             .container {
                 border-radius: 0;
@@ -284,13 +300,17 @@
             body {
                 padding: 0;
             }
+            
+            .connection-info {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>P2P File Transfer</h1>
+            <h1>P2P File Transfer with WebRTC</h1>
             <p class="subtitle">Send files directly between devices using a 4-digit code</p>
         </header>
         
@@ -304,7 +324,10 @@
             <div class="panel active" id="sender-panel">
                 <div class="form-group">
                     <label for="connection-code">Connection Code</label>
-                    <input type="text" id="connection-code" class="code-input" maxlength="4" placeholder="0000">
+                    <div class="connection-info">
+                        <input type="text" id="connection-code" class="code-input" maxlength="4" placeholder="0000">
+                        <button class="btn" id="connect-btn">Connect</button>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -313,10 +336,10 @@
                 </div>
                 
                 <div class="file-list" id="sender-file-list">
-                    <!-- Files will be listed here -->
+                    <div class="file-item">No files selected</div>
                 </div>
                 
-                <button class="btn" id="connect-btn">Connect & Send</button>
+                <button class="btn" id="send-btn" disabled>Send Files</button>
                 
                 <div class="status" id="sender-status">
                     Enter a 4-digit code and select files to begin
@@ -331,10 +354,13 @@
             <div class="panel" id="receiver-panel">
                 <div class="form-group">
                     <label for="receiver-code">Your Connection Code</label>
-                    <input type="text" id="receiver-code" class="code-input" readonly value="0000">
+                    <div class="connection-info">
+                        <input type="text" id="receiver-code" class="code-input" readonly value="0000">
+                        <button class="btn" id="generate-code-btn">Generate New Code</button>
+                    </div>
                 </div>
                 
-                <button class="btn" id="generate-code-btn">Generate New Code</button>
+                <button class="btn" id="wait-connection-btn" disabled>Waiting for connection...</button>
                 
                 <div class="status" id="receiver-status">
                     Share this code with the sender
@@ -350,14 +376,14 @@
                 <ol>
                     <li>On the receiving device, go to "Receive Files" and share the 4-digit code</li>
                     <li>On the sending device, go to "Send Files", enter the code and select files</li>
-                    <li>Click "Connect & Send" to establish connection and transfer files</li>
-                    <li>Files are transferred directly between devices - no servers involved</li>
+                    <li>Click "Connect" to establish connection, then "Send Files" to transfer</li>
+                    <li>Files are transferred directly between devices using WebRTC</li>
                 </ol>
             </div>
         </div>
         
         <footer>
-            P2P File Transfer System &copy; 2023 | Works entirely in your browser
+            P2P File Transfer System with WebRTC &copy; 2023 | Works entirely in your browser
         </footer>
     </div>
 
@@ -369,6 +395,15 @@
         let connectionCode = '';
         let filesToSend = [];
         let receivedFiles = [];
+        let isConnected = false;
+        
+        // WebRTC configuration (using public STUN servers)
+        const rtcConfiguration = {
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' }
+            ]
+        };
 
         // DOM elements
         const modeBtns = document.querySelectorAll('.mode-btn');
@@ -378,11 +413,64 @@
         const fileInput = document.getElementById('file-input');
         const senderFileList = document.getElementById('sender-file-list');
         const connectBtn = document.getElementById('connect-btn');
+        const sendBtn = document.getElementById('send-btn');
         const generateCodeBtn = document.getElementById('generate-code-btn');
+        const waitConnectionBtn = document.getElementById('wait-connection-btn');
         const senderStatus = document.getElementById('sender-status');
         const receiverStatus = document.getElementById('receiver-status');
         const senderTransferStatus = document.getElementById('sender-transfer-status');
         const receiverTransferStatus = document.getElementById('receiver-transfer-status');
+
+        // In-memory signaling server simulation
+        const signalingServer = {
+            offers: {},
+            answers: {},
+            iceCandidates: {},
+            
+            // Simulate sending an offer to the signaling server
+            sendOffer: function(code, offer) {
+                this.offers[code] = offer;
+                // In a real implementation, this would be sent to a server
+                console.log(`Offer stored for code ${code}`);
+            },
+            
+            // Simulate getting an offer from the signaling server
+            getOffer: function(code) {
+                return this.offers[code];
+            },
+            
+            // Simulate sending an answer to the signaling server
+            sendAnswer: function(code, answer) {
+                this.answers[code] = answer;
+                console.log(`Answer stored for code ${code}`);
+            },
+            
+            // Simulate getting an answer from the signaling server
+            getAnswer: function(code) {
+                return this.answers[code];
+            },
+            
+            // Simulate sending ICE candidate to the signaling server
+            sendIceCandidate: function(code, candidate) {
+                if (!this.iceCandidates[code]) {
+                    this.iceCandidates[code] = [];
+                }
+                this.iceCandidates[code].push(candidate);
+                console.log(`ICE candidate stored for code ${code}`);
+            },
+            
+            // Simulate getting ICE candidates from the signaling server
+            getIceCandidates: function(code) {
+                return this.iceCandidates[code] || [];
+            },
+            
+            // Clear data for a code (for cleanup)
+            clearCodeData: function(code) {
+                delete this.offers[code];
+                delete this.answers[code];
+                delete this.iceCandidates[code];
+            }
+        };
 
         // Mode switching
         modeBtns.forEach(btn => {
@@ -410,9 +498,11 @@
             
             if (mode === 'receiver') {
                 generateConnectionCode();
+                waitConnectionBtn.disabled = false;
             } else {
                 senderStatus.textContent = 'Enter a 4-digit code and select files to begin';
                 senderTransferStatus.innerHTML = '';
+                sendBtn.disabled = true;
             }
         }
 
@@ -422,6 +512,9 @@
             receiverCodeInput.value = connectionCode;
             receiverStatus.textContent = 'Share this code with the sender';
             receiverTransferStatus.innerHTML = '';
+            
+            // Set up receiver to listen for incoming connections
+            setupReceiver();
         }
 
         // Initialize with a code for receiver
@@ -431,6 +524,9 @@
         fileInput.addEventListener('change', () => {
             filesToSend = Array.from(fileInput.files);
             updateFileList();
+            
+            // Enable send button if connected and files selected
+            sendBtn.disabled = !isConnected || filesToSend.length === 0;
         });
 
         function updateFileList() {
@@ -478,10 +574,14 @@
         }
 
         // Generate new code for receiver
-        generateCodeBtn.addEventListener('click', generateConnectionCode);
+        generateCodeBtn.addEventListener('click', () => {
+            signalingServer.clearCodeData(connectionCode);
+            generateConnectionCode();
+        });
 
         // Connection handling
         connectBtn.addEventListener('click', initiateConnection);
+        sendBtn.addEventListener('click', sendFiles);
 
         function initiateConnection() {
             const code = connectionCodeInput.value;
@@ -492,98 +592,381 @@
                 return;
             }
             
-            if (filesToSend.length === 0) {
-                senderStatus.textContent = 'Please select at least one file to send';
-                senderStatus.className = 'status error';
+            senderStatus.textContent = 'Connecting...';
+            senderStatus.className = 'status connecting';
+            connectBtn.disabled = true;
+            
+            // Set up WebRTC connection as offerer (sender)
+            setupSender(code);
+        }
+
+        function setupSender(code) {
+            // Create peer connection
+            peerConnection = new RTCPeerConnection(rtcConfiguration);
+            
+            // Create data channel
+            dataChannel = peerConnection.createDataChannel('fileTransfer', {
+                ordered: true
+            });
+            
+            // Set up data channel event handlers
+            setupDataChannel(dataChannel);
+            
+            // Set up ICE candidate handler
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    signalingServer.sendIceCandidate(code, event.candidate);
+                }
+            };
+            
+            // Create and set local description
+            peerConnection.createOffer()
+                .then(offer => peerConnection.setLocalDescription(offer))
+                .then(() => {
+                    // Send offer to signaling server
+                    signalingServer.sendOffer(code, peerConnection.localDescription);
+                    
+                    // Start checking for answer
+                    checkForAnswer(code);
+                })
+                .catch(error => {
+                    console.error('Error creating offer:', error);
+                    senderStatus.textContent = 'Connection failed: ' + error.message;
+                    senderStatus.className = 'status error';
+                    connectBtn.disabled = false;
+                });
+        }
+
+        function setupReceiver() {
+            // Create peer connection
+            peerConnection = new RTCPeerConnection(rtcConfiguration);
+            
+            // Set up data channel event handler for incoming channels
+            peerConnection.ondatachannel = (event) => {
+                dataChannel = event.channel;
+                setupDataChannel(dataChannel);
+                
+                receiverStatus.textContent = 'Connected to sender!';
+                receiverStatus.className = 'status connected';
+                waitConnectionBtn.textContent = 'Connected';
+                waitConnectionBtn.disabled = true;
+            };
+            
+            // Set up ICE candidate handler
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    signalingServer.sendIceCandidate(connectionCode, event.candidate);
+                }
+            };
+            
+            // Start checking for offers
+            checkForOffer();
+        }
+
+        function checkForOffer() {
+            const offer = signalingServer.getOffer(connectionCode);
+            
+            if (offer) {
+                receiverStatus.textContent = 'Offer received, connecting...';
+                receiverStatus.className = 'status connecting';
+                
+                // Set remote description
+                peerConnection.setRemoteDescription(offer)
+                    .then(() => peerConnection.createAnswer())
+                    .then(answer => peerConnection.setLocalDescription(answer))
+                    .then(() => {
+                        // Send answer to signaling server
+                        signalingServer.sendAnswer(connectionCode, peerConnection.localDescription);
+                        
+                        // Add any stored ICE candidates
+                        const candidates = signalingServer.getIceCandidates(connectionCode);
+                        candidates.forEach(candidate => {
+                            peerConnection.addIceCandidate(candidate);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error handling offer:', error);
+                        receiverStatus.textContent = 'Connection failed: ' + error.message;
+                        receiverStatus.className = 'status error';
+                    });
+            } else {
+                // Check again in 1 second
+                setTimeout(checkForOffer, 1000);
+            }
+        }
+
+        function checkForAnswer(code) {
+            const answer = signalingServer.getAnswer(code);
+            
+            if (answer) {
+                // Set remote description
+                peerConnection.setRemoteDescription(answer)
+                    .then(() => {
+                        // Add any stored ICE candidates
+                        const candidates = signalingServer.getIceCandidates(code);
+                        candidates.forEach(candidate => {
+                            peerConnection.addIceCandidate(candidate);
+                        });
+                        
+                        senderStatus.textContent = 'Connected to receiver!';
+                        senderStatus.className = 'status connected';
+                        isConnected = true;
+                        
+                        // Enable send button if files are selected
+                        sendBtn.disabled = filesToSend.length === 0;
+                    })
+                    .catch(error => {
+                        console.error('Error handling answer:', error);
+                        senderStatus.textContent = 'Connection failed: ' + error.message;
+                        senderStatus.className = 'status error';
+                        connectBtn.disabled = false;
+                    });
+            } else {
+                // Check again in 1 second
+                setTimeout(() => checkForAnswer(code), 1000);
+            }
+        }
+
+        function setupDataChannel(channel) {
+            channel.onopen = () => {
+                console.log('Data channel opened');
+                isConnected = true;
+                
+                if (currentMode === 'sender') {
+                    senderStatus.textContent = 'Data channel ready for transfer';
+                    sendBtn.disabled = filesToSend.length === 0;
+                } else {
+                    receiverStatus.textContent = 'Data channel ready, waiting for files...';
+                }
+            };
+            
+            channel.onclose = () => {
+                console.log('Data channel closed');
+                isConnected = false;
+                
+                if (currentMode === 'sender') {
+                    senderStatus.textContent = 'Data channel closed';
+                    sendBtn.disabled = true;
+                } else {
+                    receiverStatus.textContent = 'Data channel closed';
+                }
+            };
+            
+            channel.onerror = (error) => {
+                console.error('Data channel error:', error);
+                
+                if (currentMode === 'sender') {
+                    senderStatus.textContent = 'Data channel error: ' + error.message;
+                    senderStatus.className = 'status error';
+                } else {
+                    receiverStatus.textContent = 'Data channel error: ' + error.message;
+                    receiverStatus.className = 'status error';
+                }
+            };
+            
+            // Set up message handler for receiver
+            if (currentMode === 'receiver') {
+                channel.onmessage = handleReceivedMessage;
+            }
+        }
+
+        function sendFiles() {
+            if (!isConnected || filesToSend.length === 0) {
                 return;
             }
             
-            senderStatus.textContent = 'Connecting...';
-            senderStatus.className = 'status connecting';
-            
-            // In a real implementation, we would use WebRTC and a signaling server
-            // For this demo, we'll simulate the connection process
-            simulateConnection(code);
-        }
-
-        function simulateConnection(code) {
-            // Simulate connection delay
-            setTimeout(() => {
-                if (Math.random() > 0.2) { // 80% success rate for demo
-                    senderStatus.textContent = 'Connected! Starting file transfer...';
-                    senderStatus.className = 'status connected';
-                    
-                    // Start file transfer simulation
-                    simulateFileTransfer();
-                } else {
-                    senderStatus.textContent = 'Connection failed. Please check the code and try again.';
-                    senderStatus.className = 'status error';
-                }
-            }, 1500);
-        }
-
-        function simulateFileTransfer() {
             senderTransferStatus.innerHTML = '';
             
+            // Send file count first
+            dataChannel.send(JSON.stringify({
+                type: 'fileCount',
+                count: filesToSend.length
+            }));
+            
+            // Send each file
             filesToSend.forEach((file, index) => {
-                const transferItem = document.createElement('div');
-                transferItem.className = 'transfer-item';
-                transferItem.id = `transfer-${index}`;
-                
-                const transferHeader = document.createElement('div');
-                transferHeader.className = 'transfer-header';
-                
-                const transferName = document.createElement('div');
-                transferName.className = 'transfer-name';
-                transferName.textContent = file.name;
-                
-                const transferPercent = document.createElement('div');
-                transferPercent.className = 'transfer-percent';
-                transferPercent.textContent = '0%';
-                
-                transferHeader.appendChild(transferName);
-                transferHeader.appendChild(transferPercent);
-                
-                const progressBar = document.createElement('div');
-                progressBar.className = 'progress-bar';
-                
-                const progress = document.createElement('div');
-                progress.className = 'progress';
-                progress.id = `progress-${index}`;
-                
-                progressBar.appendChild(progress);
-                
-                transferItem.appendChild(transferHeader);
-                transferItem.appendChild(progressBar);
-                
-                senderTransferStatus.appendChild(transferItem);
-                
-                // Simulate file transfer progress
-                simulateProgress(index, file.size);
+                sendFile(file, index);
             });
         }
 
-        function simulateProgress(index, fileSize) {
-            let progress = 0;
-            const progressElement = document.getElementById(`progress-${index}`);
-            const percentElement = document.querySelector(`#transfer-${index} .transfer-percent`);
+        function sendFile(file, index) {
+            const CHUNK_SIZE = 16384; // 16KB chunks
+            const fileReader = new FileReader();
+            let offset = 0;
             
-            const interval = setInterval(() => {
-                progress += Math.random() * 10;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    
-                    // Mark as completed
-                    setTimeout(() => {
-                        const transferItem = document.getElementById(`transfer-${index}`);
-                        transferItem.style.borderLeft = '4px solid #28a745';
-                    }, 500);
-                }
+            // Create transfer UI element
+            const transferItem = document.createElement('div');
+            transferItem.className = 'transfer-item';
+            transferItem.id = `transfer-${index}`;
+            
+            const transferHeader = document.createElement('div');
+            transferHeader.className = 'transfer-header';
+            
+            const transferName = document.createElement('div');
+            transferName.className = 'transfer-name';
+            transferName.textContent = file.name;
+            
+            const transferPercent = document.createElement('div');
+            transferPercent.className = 'transfer-percent';
+            transferPercent.textContent = '0%';
+            
+            transferHeader.appendChild(transferName);
+            transferHeader.appendChild(transferPercent);
+            
+            const progressBar = document.createElement('div');
+            progressBar.className = 'progress-bar';
+            
+            const progress = document.createElement('div');
+            progress.className = 'progress';
+            progress.id = `progress-${index}`;
+            
+            progressBar.appendChild(progress);
+            
+            transferItem.appendChild(transferHeader);
+            transferItem.appendChild(progressBar);
+            
+            senderTransferStatus.appendChild(transferItem);
+            
+            // Send file metadata first
+            dataChannel.send(JSON.stringify({
+                type: 'fileMetadata',
+                name: file.name,
+                size: file.size,
+                index: index
+            }));
+            
+            // Read and send file in chunks
+            fileReader.onload = (event) => {
+                const chunk = event.target.result;
                 
-                progressElement.style.width = `${progress}%`;
-                percentElement.textContent = `${Math.round(progress)}%`;
-            }, 200);
+                // Send chunk
+                dataChannel.send(JSON.stringify({
+                    type: 'fileChunk',
+                    index: index,
+                    data: Array.from(new Uint8Array(chunk)),
+                    offset: offset
+                }));
+                
+                offset += chunk.byteLength;
+                
+                // Update progress
+                const percent = Math.round((offset / file.size) * 100);
+                progress.style.width = `${percent}%`;
+                transferPercent.textContent = `${percent}%`;
+                
+                // Continue reading if not done
+                if (offset < file.size) {
+                    readNextChunk();
+                } else {
+                    // File transfer complete
+                    dataChannel.send(JSON.stringify({
+                        type: 'fileComplete',
+                        index: index
+                    }));
+                    
+                    transferItem.style.borderLeft = '4px solid #28a745';
+                }
+            };
+            
+            function readNextChunk() {
+                const slice = file.slice(offset, offset + CHUNK_SIZE);
+                fileReader.readAsArrayBuffer(slice);
+            }
+            
+            // Start reading
+            readNextChunk();
+        }
+
+        function handleReceivedMessage(event) {
+            const message = JSON.parse(event.data);
+            
+            switch (message.type) {
+                case 'fileCount':
+                    receiverTransferStatus.innerHTML = '';
+                    receivedFiles = new Array(message.count);
+                    receiverStatus.textContent = `Receiving ${message.count} file(s)...`;
+                    break;
+                    
+                case 'fileMetadata':
+                    // Create UI for incoming file
+                    const transferItem = document.createElement('div');
+                    transferItem.className = 'transfer-item';
+                    transferItem.id = `receive-${message.index}`;
+                    
+                    const transferHeader = document.createElement('div');
+                    transferHeader.className = 'transfer-header';
+                    
+                    const transferName = document.createElement('div');
+                    transferName.className = 'transfer-name';
+                    transferName.textContent = message.name;
+                    
+                    const transferPercent = document.createElement('div');
+                    transferPercent.className = 'transfer-percent';
+                    transferPercent.textContent = '0%';
+                    
+                    transferHeader.appendChild(transferName);
+                    transferHeader.appendChild(transferPercent);
+                    
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'progress-bar';
+                    
+                    const progress = document.createElement('div');
+                    progress.className = 'progress';
+                    progress.id = `receive-progress-${message.index}`;
+                    
+                    progressBar.appendChild(progress);
+                    
+                    transferItem.appendChild(transferHeader);
+                    transferItem.appendChild(progressBar);
+                    
+                    receiverTransferStatus.appendChild(transferItem);
+                    
+                    // Initialize file data
+                    receivedFiles[message.index] = {
+                        name: message.name,
+                        size: message.size,
+                        data: new Uint8Array(message.size),
+                        received: 0
+                    };
+                    break;
+                    
+                case 'fileChunk':
+                    const file = receivedFiles[message.index];
+                    if (file) {
+                        // Copy chunk data to file buffer
+                        file.data.set(new Uint8Array(message.data), message.offset);
+                        file.received += message.data.length;
+                        
+                        // Update progress
+                        const percent = Math.round((file.received / file.size) * 100);
+                        document.getElementById(`receive-progress-${message.index}`).style.width = `${percent}%`;
+                        document.querySelector(`#receive-${message.index} .transfer-percent`).textContent = `${percent}%`;
+                    }
+                    break;
+                    
+                case 'fileComplete':
+                    const completedFile = receivedFiles[message.index];
+                    if (completedFile) {
+                        // Create download link
+                        const blob = new Blob([completedFile.data]);
+                        const url = URL.createObjectURL(blob);
+                        
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = url;
+                        downloadLink.download = completedFile.name;
+                        downloadLink.textContent = 'Download';
+                        downloadLink.className = 'btn btn-secondary';
+                        downloadLink.style.marginTop = '10px';
+                        downloadLink.style.display = 'block';
+                        
+                        const transferItem = document.getElementById(`receive-${message.index}`);
+                        transferItem.appendChild(downloadLink);
+                        transferItem.style.borderLeft = '4px solid #28a745';
+                        
+                        receiverStatus.textContent = `File "${completedFile.name}" received!`;
+                    }
+                    break;
+            }
         }
 
         function resetConnection() {
@@ -597,9 +980,15 @@
                 dataChannel = null;
             }
             
+            isConnected = false;
             filesToSend = [];
             fileInput.value = '';
             updateFileList();
+            
+            connectBtn.disabled = false;
+            sendBtn.disabled = true;
+            waitConnectionBtn.disabled = false;
+            waitConnectionBtn.textContent = 'Waiting for connection...';
         }
 
         // Initialize

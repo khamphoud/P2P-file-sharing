@@ -140,11 +140,6 @@
             transform: none;
         }
 
-        .btn-secondary {
-            background: #6c757d;
-            margin-top: 10px;
-        }
-
         .file-input-wrapper {
             position: relative;
             overflow: hidden;
@@ -240,11 +235,6 @@
             margin-top: 15px;
         }
 
-        .peer-list {
-            list-style: none;
-            padding: 0;
-        }
-
         .peer-item {
             background: white;
             padding: 15px;
@@ -264,12 +254,6 @@
         .peer-status {
             color: #28a745;
             font-size: 12px;
-        }
-
-        .small-btn {
-            padding: 8px 20px;
-            font-size: 14px;
-            width: auto;
         }
     </style>
 </head>
@@ -309,10 +293,8 @@
                 </div>
 
                 <div class="section">
-                    <h2 style="margin-bottom: 15px;">👥 Connected Users</h2>
-                    <ul class="peer-list" id="senderPeerList">
-                        <li style="text-align: center; color: #999; padding: 20px;">Waiting for receiver to join...</li>
-                    </ul>
+                    <h2 style="margin-bottom: 15px;">👥 Status</h2>
+                    <div id="senderPeerStatus" style="text-align: center; color: #999; padding: 20px;">Waiting for receiver to join...</div>
                 </div>
             </div>
         </div>
@@ -322,8 +304,8 @@
             <div class="section">
                 <h2 style="margin-bottom: 15px;">Join a Room</h2>
                 <div class="input-group">
-                    <label for="roomCodeInput">Enter the 4-digit room code:</label>
-                    <input type="text" id="roomCodeInput" placeholder="e.g., 1234" maxlength="4" />
+                    <label for="roomCodeInput">Enter the room code from sender:</label>
+                    <input type="text" id="roomCodeInput" placeholder="Enter room code" />
                 </div>
                 <button class="btn" id="joinRoomBtn">Join Room</button>
                 <div id="receiveStatus"></div>
@@ -331,25 +313,25 @@
 
             <div id="roomJoined" style="display: none;">
                 <div class="section">
-                    <h2 style="margin-bottom: 15px;">👥 Connected Users</h2>
-                    <ul class="peer-list" id="receiverPeerList">
-                        <li style="text-align: center; color: #999; padding: 20px;">Connecting...</li>
-                    </ul>
+                    <h2 style="margin-bottom: 15px;">👥 Status</h2>
+                    <div id="receiverPeerStatus" style="text-align: center; color: #999; padding: 20px;">Connecting...</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Simple signaling server simulation using a shared object
-        const rooms = {};
-        let myPeerId = Math.random().toString(36).substr(2, 9);
-        let currentRoomCode = null;
-        let pc = null;
-        let dataChannel = null;
+        // Using PeerJS for simplified WebRTC with built-in signaling
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.2/peerjs.min.js';
+        document.head.appendChild(script);
+
+        let peer = null;
+        let conn = null;
         let fileToSend = null;
         let receivedChunks = [];
         let isSender = false;
+        let currentRoomCode = null;
 
         const fileInput = document.getElementById('fileInput');
         const fileLabel = document.getElementById('fileLabel');
@@ -361,246 +343,162 @@
         const receiveStatus = document.getElementById('receiveStatus');
         const roomCreated = document.getElementById('roomCreated');
         const roomJoined = document.getElementById('roomJoined');
-        const senderPeerList = document.getElementById('senderPeerList');
-        const receiverPeerList = document.getElementById('receiverPeerList');
+        const senderPeerStatus = document.getElementById('senderPeerStatus');
+        const receiverPeerStatus = document.getElementById('receiverPeerStatus');
 
-        fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                fileToSend = file;
-                fileLabel.textContent = `✓ ${file.name} (${formatFileSize(file.size)})`;
-                createRoomBtn.disabled = false;
-            }
-        });
-
-        createRoomBtn.addEventListener('click', async () => {
-            isSender = true;
-            const roomCode = generateRoomCode();
-            currentRoomCode = roomCode;
-            
-            // Store room in memory
-            rooms[roomCode] = {
-                sender: myPeerId,
-                receiver: null,
-                offers: {},
-                answers: {}
-            };
-
-            roomCodeDisplay.textContent = roomCode;
-            roomCreated.style.display = 'block';
-            createRoomBtn.disabled = true;
-
-            showStatus(sendStatus, 'success', '✅ Room created! Share the code above.');
-            
-            // Check for receiver joining
-            checkForReceiver();
-        });
-
-        joinRoomBtn.addEventListener('click', async () => {
-            const roomCode = roomCodeInput.value.trim().toUpperCase();
-            
-            if (!roomCode || roomCode.length !== 4) {
-                showStatus(receiveStatus, 'error', 'Please enter a valid 4-digit code');
-                return;
-            }
-
-            if (!rooms[roomCode]) {
-                showStatus(receiveStatus, 'error', 'Room not found. Please check the code.');
-                return;
-            }
-
-            if (rooms[roomCode].receiver) {
-                showStatus(receiveStatus, 'error', 'Room is full. Only 2 people can connect.');
-                return;
-            }
-
-            isSender = false;
-            currentRoomCode = roomCode;
-            rooms[roomCode].receiver = myPeerId;
-
-            roomJoined.style.display = 'block';
-            joinRoomBtn.disabled = true;
-
-            showStatus(receiveStatus, 'success', '✅ Joined room! Connecting...');
-            
-            // Create connection as receiver
-            await createReceiverConnection();
-        });
-
-        async function checkForReceiver() {
-            const interval = setInterval(async () => {
-                if (!currentRoomCode || !rooms[currentRoomCode]) {
-                    clearInterval(interval);
-                    return;
+        script.onload = function() {
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    fileToSend = file;
+                    fileLabel.textContent = `✓ ${file.name} (${formatFileSize(file.size)})`;
+                    createRoomBtn.disabled = false;
                 }
+            });
 
-                const room = rooms[currentRoomCode];
-                if (room.receiver) {
-                    clearInterval(interval);
-                    senderPeerList.innerHTML = '<li class="peer-item"><span class="peer-name">Receiver</span><span class="peer-status">● Connected</span></li>';
-                    
-                    // Create connection as sender
-                    await createSenderConnection();
-                }
-            }, 1000);
-        }
+            createRoomBtn.addEventListener('click', async () => {
+                isSender = true;
+                const roomCode = generateRoomCode();
+                currentRoomCode = roomCode;
 
-        async function createSenderConnection() {
-            try {
-                pc = new RTCPeerConnection({
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' }
-                    ]
+                // Create peer with room code as ID
+                peer = new Peer(roomCode, {
+                    config: {
+                        iceServers: [
+                            { urls: 'stun:stun.l.google.com:19302' },
+                            { urls: 'stun:stun1.l.google.com:19302' }
+                        ]
+                    }
                 });
 
-                dataChannel = pc.createDataChannel('fileTransfer');
-                setupDataChannel(dataChannel);
+                peer.on('open', (id) => {
+                    roomCodeDisplay.textContent = id;
+                    roomCreated.style.display = 'block';
+                    createRoomBtn.disabled = true;
+                    showStatus(sendStatus, 'success', '✅ Room created! Share the code above.');
+                });
 
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
+                peer.on('connection', (connection) => {
+                    conn = connection;
+                    setupConnection(conn);
+                    senderPeerStatus.innerHTML = '<div class="peer-item"><span class="peer-name">Receiver</span><span class="peer-status">● Connected</span></div>';
+                });
 
-                // Wait for ICE gathering
-                await new Promise((resolve) => {
-                    if (pc.iceGatheringState === 'complete') {
-                        resolve();
+                peer.on('error', (err) => {
+                    console.error('Peer error:', err);
+                    if (err.type === 'unavailable-id') {
+                        showStatus(sendStatus, 'error', 'Room code already in use. Please try again.');
+                        createRoomBtn.disabled = false;
+                        roomCreated.style.display = 'none';
                     } else {
-                        pc.addEventListener('icegatheringstatechange', () => {
-                            if (pc.iceGatheringState === 'complete') {
-                                resolve();
-                            }
-                        });
+                        showStatus(sendStatus, 'error', `Error: ${err.message}`);
                     }
                 });
+            });
 
-                // Store offer
-                rooms[currentRoomCode].offers[myPeerId] = pc.localDescription;
+            joinRoomBtn.addEventListener('click', async () => {
+                const roomCode = roomCodeInput.value.trim();
 
-                // Wait for answer
-                checkForAnswer();
-            } catch (err) {
-                showStatus(sendStatus, 'error', `Error: ${err.message}`);
-            }
-        }
-
-        async function checkForAnswer() {
-            const interval = setInterval(async () => {
-                if (!currentRoomCode || !rooms[currentRoomCode]) {
-                    clearInterval(interval);
+                if (!roomCode) {
+                    showStatus(receiveStatus, 'error', 'Please enter a room code');
                     return;
                 }
 
-                const room = rooms[currentRoomCode];
-                const answer = room.answers[room.receiver];
+                isSender = false;
+                currentRoomCode = roomCode;
 
-                if (answer) {
-                    clearInterval(interval);
-                    await pc.setRemoteDescription(answer);
-                    showStatus(sendStatus, 'info', 'Connecting to receiver...');
-                }
-            }, 1000);
-        }
-
-        async function createReceiverConnection() {
-            try {
-                // Wait for offer
-                const interval = setInterval(async () => {
-                    if (!currentRoomCode || !rooms[currentRoomCode]) {
-                        clearInterval(interval);
-                        return;
+                // Create peer as receiver
+                peer = new Peer({
+                    config: {
+                        iceServers: [
+                            { urls: 'stun:stun.l.google.com:19302' },
+                            { urls: 'stun:stun1.l.google.com:19302' }
+                        ]
                     }
+                });
 
-                    const room = rooms[currentRoomCode];
-                    const offer = room.offers[room.sender];
+                peer.on('open', (id) => {
+                    // Connect to sender
+                    conn = peer.connect(roomCode);
+                    setupConnection(conn);
 
-                    if (offer) {
-                        clearInterval(interval);
+                    roomJoined.style.display = 'block';
+                    joinRoomBtn.disabled = true;
+                    showStatus(receiveStatus, 'success', '✅ Joined room! Connecting...');
+                });
 
-                        pc = new RTCPeerConnection({
-                            iceServers: [
-                                { urls: 'stun:stun.l.google.com:19302' },
-                                { urls: 'stun:stun1.l.google.com:19302' }
-                            ]
-                        });
-
-                        pc.ondatachannel = (e) => {
-                            dataChannel = e.channel;
-                            setupDataChannel(dataChannel);
-                        };
-
-                        await pc.setRemoteDescription(offer);
-                        const answer = await pc.createAnswer();
-                        await pc.setLocalDescription(answer);
-
-                        // Wait for ICE gathering
-                        await new Promise((resolve) => {
-                            if (pc.iceGatheringState === 'complete') {
-                                resolve();
-                            } else {
-                                pc.addEventListener('icegatheringstatechange', () => {
-                                    if (pc.iceGatheringState === 'complete') {
-                                        resolve();
-                                    }
-                                });
-                            }
-                        });
-
-                        // Store answer
-                        rooms[currentRoomCode].answers[myPeerId] = pc.localDescription;
-
-                        receiverPeerList.innerHTML = '<li class="peer-item"><span class="peer-name">Sender</span><span class="peer-status">● Connected</span></li>';
+                peer.on('error', (err) => {
+                    console.error('Peer error:', err);
+                    if (err.type === 'peer-unavailable') {
+                        showStatus(receiveStatus, 'error', 'Room not found. Please check the code and make sure the sender has created the room.');
+                    } else {
+                        showStatus(receiveStatus, 'error', `Error: ${err.message}`);
                     }
-                }, 1000);
-            } catch (err) {
-                showStatus(receiveStatus, 'error', `Error: ${err.message}`);
-            }
-        }
+                    joinRoomBtn.disabled = false;
+                });
+            });
+        };
 
-        function setupDataChannel(channel) {
-            channel.onopen = () => {
+        function setupConnection(connection) {
+            connection.on('open', () => {
                 const statusEl = isSender ? sendStatus : receiveStatus;
-                showStatus(statusEl, 'success', '✅ Connected! Ready to transfer.');
+                const peerStatusEl = isSender ? senderPeerStatus : receiverPeerStatus;
                 
+                showStatus(statusEl, 'success', '✅ Connected! Ready to transfer.');
+                peerStatusEl.innerHTML = '<div class="peer-item"><span class="peer-name">' + (isSender ? 'Receiver' : 'Sender') + '</span><span class="peer-status">● Connected</span></div>';
+
                 if (fileToSend && isSender) {
                     setTimeout(() => sendFile(), 500);
                 }
-            };
+            });
 
-            channel.onmessage = (e) => {
-                if (typeof e.data === 'string') {
-                    const metadata = JSON.parse(e.data);
-                    if (metadata.type === 'metadata') {
-                        receivedChunks = [];
-                        showStatus(receiveStatus, 'info', `Receiving: ${metadata.name} (${formatFileSize(metadata.size)})`);
-                    } else if (metadata.type === 'complete') {
-                        const blob = new Blob(receivedChunks);
-                        downloadFile(blob, metadata.name);
-                        showStatus(receiveStatus, 'success', `✅ File received: ${metadata.name}`);
-                    }
-                } else {
-                    receivedChunks.push(e.data);
+            connection.on('data', (data) => {
+                if (data.type === 'metadata') {
+                    receivedChunks = [];
+                    showStatus(receiveStatus, 'info', `Receiving: ${data.name} (${formatFileSize(data.size)})`);
+                } else if (data.type === 'chunk') {
+                    receivedChunks.push(data.data);
+                    const progress = Math.round((receivedChunks.length * 16384 / data.totalSize) * 100);
+                    showStatus(receiveStatus, 'info', `
+                        Receiving: ${data.name}
+                        <div class="progress">
+                            <div class="progress-bar" style="width: ${Math.min(progress, 100)}%">${Math.min(progress, 100)}%</div>
+                        </div>
+                    `);
+                } else if (data.type === 'complete') {
+                    const blob = new Blob(receivedChunks);
+                    downloadFile(blob, data.name);
+                    showStatus(receiveStatus, 'success', `✅ File received: ${data.name}`);
                 }
-            };
+            });
 
-            channel.onerror = (err) => {
-                console.error('Channel error:', err);
-            };
+            connection.on('error', (err) => {
+                console.error('Connection error:', err);
+            });
         }
 
         function sendFile() {
             const chunkSize = 16384;
-            const metadata = {
+            
+            // Send metadata
+            conn.send({
                 type: 'metadata',
                 name: fileToSend.name,
                 size: fileToSend.size
-            };
-            dataChannel.send(JSON.stringify(metadata));
+            });
 
             const reader = new FileReader();
             let offset = 0;
 
             reader.onload = (e) => {
-                dataChannel.send(e.target.result);
+                // Send chunk
+                conn.send({
+                    type: 'chunk',
+                    data: e.target.result,
+                    name: fileToSend.name,
+                    totalSize: fileToSend.size
+                });
+
                 offset += e.target.result.byteLength;
 
                 const progress = Math.round((offset / fileToSend.size) * 100);
@@ -614,7 +512,7 @@
                 if (offset < fileToSend.size) {
                     readSlice(offset);
                 } else {
-                    dataChannel.send(JSON.stringify({ type: 'complete', name: fileToSend.name }));
+                    conn.send({ type: 'complete', name: fileToSend.name });
                     showStatus(sendStatus, 'success', `✅ File sent successfully: ${fileToSend.name}`);
                 }
             };
@@ -637,7 +535,7 @@
         }
 
         function generateRoomCode() {
-            return Math.floor(1000 + Math.random() * 9000).toString();
+            return 'room-' + Math.random().toString(36).substr(2, 6);
         }
 
         function showStatus(element, type, message) {
@@ -655,7 +553,7 @@
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
+
             if (tab === 'send') {
                 document.querySelector('.tab:nth-child(1)').classList.add('active');
                 document.getElementById('sendTab').classList.add('active');

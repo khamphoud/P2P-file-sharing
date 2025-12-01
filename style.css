@@ -183,4 +183,158 @@ input[type="text"] {
         width: 100%;
         margin-bottom: 10px;
     }
+
+}
+/* Additional styles for the updated app */
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.file-info i {
+    color: #6a11cb;
+    font-size: 1.2em;
+}
+
+.file-name {
+    font-weight: 600;
+    margin-bottom: 3px;
+}
+
+.file-size {
+    color: #6c757d;
+    font-size: 0.9em;
+}
+
+.remove-file {
+    background: #dc3545;
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.remove-file:hover {
+    background: #c82333;
+    transform: scale(1.1);
+}
+
+.empty-message {
+    text-align: center;
+    color: #6c757d;
+    padding: 20px;
+    font-style: italic;
+}
+
+.file-total {
+    margin-top: 15px;
+    padding: 10px;
+    background: #e9ecef;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.1em;
+}
+
+.receiving-file {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-left: 4px solid #2575fc;
+}
+
+.receiving-file i {
+    color: #2575fc;
+    font-size: 1.5em;
+}
+
+.file-progress {
+    flex: 1;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.file-progress::after {
+    content: '';
+    display: block;
+    height: 100%;
+    background: #2575fc;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.download-item {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border: 2px solid #d4edda;
+}
+
+.download-item i {
+    color: #28a745;
+    font-size: 1.5em;
+}
+
+.download-item a {
+    margin-left: auto;
+}
+
+.log-info {
+    color: #495057;
+    padding: 5px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.log-error {
+    color: #dc3545;
+    padding: 5px 0;
+    border-bottom: 1px solid #f8d7da;
+}
+
+.log-success {
+    color: #28a745;
+    padding: 5px 0;
+    border-bottom: 1px solid #d4edda;
+}
+
+.success-message {
+    animation: slideDown 0.5s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Connection status animations */
+.fa-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
